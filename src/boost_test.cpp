@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <string>
+#include <iomanip>
 #include <boost/filesystem.hpp>
 using namespace boost::filesystem;
 
@@ -34,7 +35,7 @@ int main() {
 	return 0;
 }
 
-const string rPathS = "/home/uri";
+const string rPathS = "/usr";
 
 void testR(const path& p, int indent);
 void test(){
@@ -50,11 +51,19 @@ void testR(const path& p, int indent){
 	vector<path> dirs;
 	const string indentS = string(indent, ' ');
 	cout << indentS << "[D]" << p << endl;
+	auto perms = status(p).permissions();
+	cout << indentS << "  perms=" << hex << perms << endl;
+//	if (perms.)
+	try{
 	for (auto fi = directory_iterator(p);fi!=directory_iterator();fi++)
-		if (!is_directory(*fi))
-			cout << indentS << " [F]" << fi->path().filename() << endl;
-		else
+		if (!is_directory(*fi)){
+			{}//cout << indentS << " [F]" << fi->path().filename() << endl;
+
+		}else
 			dirs.push_back(*fi);
+	}catch(filesystem_error & e){
+		cout << indentS << " skipped " << p << " because of " << e.what() << endl;
+	}
 
 	for (auto dir : dirs)
 		testR(dir,indent+2);
